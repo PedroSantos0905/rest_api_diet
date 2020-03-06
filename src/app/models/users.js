@@ -9,6 +9,7 @@ const Users = mongoose.model('User', new mongoose.Schema({
     passwordResetToken: {type: String,select: false},
     passwordResetExpires: {type: Date,select: false},
     createAt: {type: Date, default: Date.now},
+    updateAt: {type: Date, default: Date.now},
 }))
 
 module.exports = Users

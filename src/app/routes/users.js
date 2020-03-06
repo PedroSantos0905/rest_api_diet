@@ -7,6 +7,8 @@ const Users = require('../models/users');
 const crypto = require('crypto');
 const mailer = require('../../modules/mailer');
 
+const sgMail = require('@sendgrid/mail');
+
 router.post('/', async function(req, res, next) {
   try {
     const createUserToken = crypto.randomBytes(20).toString('hex');
@@ -15,6 +17,7 @@ router.post('/', async function(req, res, next) {
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, 10),
       createAt: req.body.createAt,
+      updateAt: req.body.updateAt,
       createUserToken: createUserToken,
       active: true,
     })
@@ -42,6 +45,39 @@ router.post('/', async function(req, res, next) {
     })
   }
 
+});
+
+router.put('/:usersId', async (req, res, next) => {
+try {
+  const { username, email } = req.body;
+
+  if(user)
+  return res.status(400).send({ error: 'Usuário já cadastrado' });
+
+  const user = await Users.findByIdAndUpdate(req.params.usersd, {
+    username,
+    email,
+    updateAt: new Date()
+  });
+
+  mailer.sendMail({
+    to: email,
+    from: 'pedrosantos0509@gmail.com',
+    template: 'auth/change_user',
+    context: { token },
+  }, (error) => {
+    if (error)
+      return res.status(400).send({ error: 'Não foi possível enviar email de alteração' });
+  })
+
+  await user.save();
+
+  return res.status(201).json("Cadastro alterado com sucesso");
+
+} catch (error) {
+  console.log();
+  res.status(400).send({ error: 'Não foi possível alterar o cadastro'});
+}
 });
 
 router.post('/authenticate', async function(req, res, next) {
@@ -86,7 +122,7 @@ router.post('/forgot_password', async (req, res) =>{
     const user = await Users.findOne({ email });
 
     if(!user)
-    return res.status(400).send({ error: 'Usuário não existe' });
+    return res.status(400).send({ error: 'Usuário não encontrado' });
 
     const token = crypto.randomBytes(20).toString('hex');
 
@@ -136,39 +172,26 @@ router.post('/reset_password', async (req, res) => {
   if (now > user.passwordResetExpires)
     return res.status(400).send({ error: 'Token expirado, gere um novamente'});
 
+    mailer.sendMail({
+      to: email,
+      from: 'pedrosantos0509@gmail.com',
+      template: 'auth/reset_senha',
+      context: { token },
+    }, (error) => {
+      if (error)
+        return res.status(400).send({ error: 'Não foi possível enviar email de alteração de cadastro' });
+    })
+
   user.password = bcrypt.hashSync(password, 10)
   await user.save();
 
-  return res.status(201).json("Senha resetada com sucesso");
+  return res.status(201).json("Cadastro alterado com sucesso");
   } catch (error) {
-    res.status(400).send({ error: 'Não foi possível resetar senha tente novamente' });
+    res.status(400).send({ error: 'Não foi possível alterar o cadastro, por favor tente novamente' });
   }
 });
 
-router.post('/verify', async (req, res, next) => {
-      const { email, token, active } = req.body;
-
-      try {
-      const user = await Users.findOne({ email })
-      .select('+createUserToken active');
-
-      if(!user)
-      return res.status(400).send({ error: 'Usuário não existe' });
-  
-      if (token !== user.createUserToken)
-      return res.status(400).send({ error: 'Token inválido'});
-
-      user.active = active;
-      await user.save();
-
-      return res.status(201).json("Cadastro finalizado com sucesso");
-    } catch (error) {
-      console.log(error)
-      res.status(400).send({ error: 'Não foi possível finalizar o cadastro' });
-    }
-  });
-
-  router.post('/desative', async (req, res, next) => {
+router.post('/desative', async (req, res, next) => {
     const { email, token, active } = req.body;
 
     try {
@@ -182,11 +205,21 @@ router.post('/verify', async (req, res, next) => {
     return res.status(400).send({ error: 'Token inválido'});
 
     user.active = active;
+
+    mailer.sendMail({
+      to: email,
+      from: 'pedrosantos0509@gmail.com',
+      template: 'auth/desative_user',
+    }, (error) => {
+      if (error)
+        return res.status(400).send({ error: 'Não foi possível enviar email de desativação' });
+    })
+
     await user.save();
 
     return res.status(201).json("Cadastro desativado com sucesso");
+
   } catch (error) {
-    console.log(error)
     res.status(400).send({ error: 'Não foi possível finalizar o cadastro' });
   }
 });
