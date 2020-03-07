@@ -47,45 +47,37 @@ router.post('/', async function(req, res, next) {
 
 });
 
-router.put('/:usersId', async (req, res, next) => {
+router.put('/:usersId', async (req, res) => {
+const { username, email } = req.body;
+
 try {
-  const { username, email } = req.body;
 
-  if(user)
-  return res.status(400).send({ error: 'Usuário já cadastrado' });
+ const now = new Date();
 
-  const user = await Users.findByIdAndUpdate(req.params.usersd, {
+ const user = await Users.findByIdAndUpdate(req.params.usersId, {
     username,
     email,
-    updateAt: new Date()
-  });
+    updateAt: now
+  }, { new: true });
 
-  mailer.sendMail({
-    to: email,
-    from: 'pedrosantos0509@gmail.com',
-    template: 'auth/change_user',
-    context: { token },
-  }, (error) => {
-    if (error)
-      return res.status(400).send({ error: 'Não foi possível enviar email de alteração' });
-  })
+ await user.save();
 
-  await user.save();
+ return res.send( { msg: 'Cadastro alterado com sucesso',
+                    user: user.username,
+                    email: user.email,
+                    updateAt: user.updateAt
+} );
 
-  return res.status(201).json("Cadastro alterado com sucesso");
-
-} catch (error) {
-  console.log();
-  res.status(400).send({ error: 'Não foi possível alterar o cadastro'});
-}
-});
+}catch (error) {
+  res.status(400).send({ error: 'Usuário ou email já cadastrado'});
+}});
 
 router.post('/authenticate', async function(req, res, next) {
   const { email } = req.body;
 
   try {
     const user = await Users.findOne({ email })
-    .select('+active');
+    .select('+password active');
 
     if (!user || !bcrypt.compareSync(req.body.password, user.password)){
       return res.status(400).json({msg: "Usuário não encontrado com os dados informados"})
@@ -149,7 +141,6 @@ router.post('/forgot_password', async (req, res) =>{
     return res.status(201).json("Por favor verifique seu email para continuar");
 
   } catch (error) {
-    console.log(error)
     res.status(400).send({ error: 'Erro por favor, tente novamente' })
   }
 });
@@ -159,7 +150,7 @@ router.post('/reset_password', async (req, res) => {
 
   try {
     const user = await Users.findOne({ email })
-    .select('+passwordResetToken passwordResetExpires');
+    .select('+passwordResetToken passwordResetExpires password');
 
   if(!user)
     return res.status(400).send({ error: 'Usuário não existe' });
@@ -170,7 +161,7 @@ router.post('/reset_password', async (req, res) => {
   const now = new Date();
 
   if (now > user.passwordResetExpires)
-    return res.status(400).send({ error: 'Token expirado, gere um novamente'});
+    return res.status(400).send({ error: 'Token expirado, gere novamente'});
 
     mailer.sendMail({
       to: email,
@@ -179,15 +170,15 @@ router.post('/reset_password', async (req, res) => {
       context: { token },
     }, (error) => {
       if (error)
-        return res.status(400).send({ error: 'Não foi possível enviar email de alteração de cadastro' });
+        return res.status(400).send({ error: 'Não foi possível enviar email de alteração de senha' });
     })
 
   user.password = bcrypt.hashSync(password, 10)
   await user.save();
 
-  return res.status(201).json("Cadastro alterado com sucesso");
+  return res.status(201).json("Senha alterada com sucesso");
   } catch (error) {
-    res.status(400).send({ error: 'Não foi possível alterar o cadastro, por favor tente novamente' });
+    res.status(400).send({ error: 'Não foi possível alterar a senha, por favor tente novamente' });
   }
 });
 
@@ -220,7 +211,7 @@ router.post('/desative', async (req, res, next) => {
     return res.status(201).json("Cadastro desativado com sucesso");
 
   } catch (error) {
-    res.status(400).send({ error: 'Não foi possível finalizar o cadastro' });
+    res.status(400).send({ error: 'Não foi possível desativar o cadastro' });
   }
 });
 
