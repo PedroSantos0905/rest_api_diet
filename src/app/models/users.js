@@ -13,3 +13,6 @@ const Users = mongoose.model('User', new mongoose.Schema({
 }))
 
 module.exports = Users
+
+
+// teste
