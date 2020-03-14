@@ -70,4 +70,28 @@ router.post('/login', (req, res, next) => {
     });
 });
 
+router.put('/dadosTmb', (req, res, next) => {
+    mysql.getConnection((err, conn) => {
+        if (err) { return res.status(500).send({ error: error }) }
+            conn.query(
+                `call pr_atualiza_perfil_inseri_hist_perfil(?,?,?,?,?)`,
+                [req.body.usuario, req.body.idade, req.body.peso, req.body.altura, req.body.sexo],
+                (error, field) => {
+                    conn.release();
+                    if (error) { return res.status(500).send({ error: error }) }
+                    const response = {
+                        mensagem: 'Perfil cadastrado com sucesso',
+                        perfilCriado: {
+                            usuario: req.body.id_usuario,
+                            sexo: req.body.id_sexo,
+                            idade: req.body.idade,
+                            peso: req.body.peso,
+                            altura: req.body.altura
+                        }
+                    }
+                return res.status(201).send(response);
+            })
+        });
+    });
+
 module.exports = router;
