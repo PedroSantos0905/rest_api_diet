@@ -59,7 +59,7 @@ router.put('/atualizar', (req, res, next) => {
                                 email: req.body.email
                             }
                         }
-                        return res.status(201).send(response);
+                        return res.status(200).send(response);
                     });
             }
         })
@@ -120,7 +120,7 @@ router.put('/dadosTmb', (req, res, next) => {
                         altura: req.body.altura
                     }
                 }
-                return res.status(201).send(response);
+                return res.status(200).send(response);
             })
     });
 });

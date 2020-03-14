@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 
 const rotaUsuarios = require('./routes/usuarios');
+const rotaAgua = require('./routes/agua');
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/usuarios', rotaUsuarios);
+app.use('/agua', rotaAgua);
 
 app.use((req, res, next) => {
     const erro = new Error('Rota não encontrada');
