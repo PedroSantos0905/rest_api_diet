@@ -3,6 +3,8 @@ const router = express.Router();
 const mysql = require('../database/mysql').pool;
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const auth = require('../midlleware/auth');
+require("dotenv").config();
 
 router.post('/', (req, res, next) => {
     mysql.getConnection((err, conn) => {
@@ -37,7 +39,8 @@ router.post('/', (req, res, next) => {
     });
 });
 
-router.put('/atualizar', (req, res, next) => {
+router.put('/atualizar', auth.obrigatorio, (req, res, next) => {
+    console.log(req.usuario)
     mysql.getConnection((err, conn) => {
         if (err) { return res.status(500).send({ error: error }) }
         conn.query('SELECT * FROM usuario WHERE email = ?', [req.body.email], (error, results) => {
@@ -47,14 +50,14 @@ router.put('/atualizar', (req, res, next) => {
             } else {
                 conn.query(
                     `UPDATE usuario SET nome = ?, email = ? WHERE id_usuario = ?`,
-                    [req.body.nome, req.body.email, req.body.id_usuario],
+                    [req.body.nome, req.body.email, req.usuario.id_usuario],
                     (error, results) => {
                         conn.release();
                         if (error) { return res.status(500).send({ error: error }) }
                         const response = {
                             mensagem: 'Cadastro alterado com sucesso',
                             usuarioAlterado: {
-                                id_usuario: req.body.id_usuario,
+                                id_usuario: req.usuario.id_usuario,
                                 nome: req.body.nome,
                                 email: req.body.email
                             }
@@ -85,7 +88,7 @@ router.post('/login', (req, res, next) => {
                     const token = jwt.sign({
                         id_usuario: results[0].id_usuario,
                         email: results[0].email
-                    }, '1bb1b0b2d156508ec2eacab4f3ee7f5f',
+                    }, process.env.JWT_KEY,
                         {
                             expiresIn: "1h"
                         });
@@ -101,19 +104,20 @@ router.post('/login', (req, res, next) => {
     });
 });
 
-router.put('/dadosTmb', (req, res, next) => {
+router.put('/dadosTmb', auth.obrigatorio, (req, res, next) => {
+    console.log(req.usuario)
     mysql.getConnection((err, conn) => {
         if (err) { return res.status(500).send({ error: error }) }
         conn.query(
             `call pr_atualiza_perfil_inseri_hist_perfil(?,?,?,?,?)`,
-            [req.body.usuario, req.body.idade, req.body.peso, req.body.altura, req.body.sexo],
+            [req.usuario.id_usuario, req.body.idade, req.body.peso, req.body.altura, req.body.sexo],
             (error, field) => {
                 conn.release();
                 if (error) { return res.status(500).send({ error: error }) }
                 const response = {
                     mensagem: 'Perfil cadastrado com sucesso',
                     perfilCriado: {
-                        usuario: req.body.id_usuario,
+                        usuario: req.usuario.id_usuario,
                         sexo: req.body.id_sexo,
                         idade: req.body.idade,
                         peso: req.body.peso,
