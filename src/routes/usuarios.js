@@ -17,17 +17,18 @@ router.post('/', (req, res, next) => {
                 bcrypt.hash(req.body.senha, 10, (errBcrypt, hash) => {
                     if (errBcrypt) { return res.status(500).send({ error: errBcrypt }) }
                     conn.query(
-                        `INSERT INTO usuario (nome, email, senha) VALUES (?,?,?)`,
-                        [req.body.nome, req.body.email, hash],
+                        `INSERT INTO usuario (nome, email, senha, id_tipo_cadastro) VALUES (?,?,?,?)`,
+                        [req.body.nome, req.body.email, hash, req.body.id_tipo_cadastro],
                         (error, results) => {
                             conn.release();
                             if (error) { return res.status(500).send({ error: error }) }
                             const response = {
                                 mensagem: 'Cadastro realizado com sucesso',
                                 usuarioCriado: {
-                                    id_usuario: results.insertId,
+                                    usuario: results.insertId,
                                     nome: req.body.nome,
-                                    email: req.body.email
+                                    email: req.body.email,
+                                    tipo_cadastro: req.body.id_tipo_cadastro
                                 }
                             }
                             return res.status(201).send(response);

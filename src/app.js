@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 
 const rotaUsuarios = require('./routes/usuarios');
 const rotaAgua = require('./routes/agua');
+const rotaSprint = require('./routes/sprint');
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -31,6 +32,7 @@ app.use((req, res, next) => {
 
 app.use('/usuarios', rotaUsuarios);
 app.use('/agua', rotaAgua);
+app.use('/sprint', rotaSprint);
 
 app.use((req, res, next) => {
     const erro = new Error('Rota não encontrada');
