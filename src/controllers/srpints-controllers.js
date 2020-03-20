@@ -111,7 +111,7 @@ exports.selecionarSprint = (req, res, next) => {
         if (error) { return res.status(500).send({ error: error }) }
         if (result.length == 0) {
           return res.status(404).send({
-            mensagem: 'Não foi encontrado sprint para esse scrum master'
+            mensagem: 'Sprint não encontrada'
           })
         }
         const response = {

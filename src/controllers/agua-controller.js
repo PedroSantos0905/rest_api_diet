@@ -92,3 +92,60 @@ exports.excluirConsumo = (req, res, next) => {
 
   });
 }
+
+exports.listarConsumo = (req, res, next) => {
+  console.log(req.usuario)
+  mysql.getConnection((err, conn) => {
+    if (err) { return res.status(500).send({ error: error }) }
+    conn.query('SELECT * FROM agua where fk_usuario_agua = ?',
+      [req.usuario.id_usuario],
+      (error, result, fields) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        if (result.length == 0) {
+          return res.status(404).send({
+            mensagem: 'Não foi encontrado consumo de água para esse usuário'
+          })
+        }
+        const response = {
+          quantidade: result.length,
+          sprints: result.map(agua => {
+            return {
+              id_agua: agua.id_agua,
+              fk_usuario_agua: agua.fk_usuario_agua,
+              mililitro: agua.mililitro,
+              hora: agua.hora,
+              alarme: agua.alarme
+            }
+          })
+        }
+        return res.status(200).send(response);
+      });
+  });
+}
+
+exports.selecionarConsumo = (req, res, next) => {
+  console.log(req.usuario)
+  mysql.getConnection((err, conn) => {
+    if (err) { return res.status(500).send({ error: error }) }
+    conn.query('SELECT * FROM agua where id_agua = ?',
+      [req.body.id_agua],
+      (error, result, fields) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        if (result.length == 0) {
+          return res.status(404).send({
+            mensagem: 'Consumo não encontrado'
+          })
+        }
+        const response = {
+          agua: {
+            id_agua: result[0].id_agua,
+            fk_usuario_agua: result[0].fk_usuario_agua,
+            mililitro: result[0].mililitro,
+            hora: result[0].hora,
+            alarme: result[0].alarme
+          }
+        }
+        return res.status(200).send(response);
+      });
+  });
+}
