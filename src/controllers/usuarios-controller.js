@@ -1,7 +1,6 @@
 const mysql = require('../database/mysql').pool;
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-require("dotenv").config();
 
 exports.cadastrarUsuario = (req, res, next) => {
   mysql.getConnection((err, conn) => {

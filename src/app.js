@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
@@ -44,7 +45,7 @@ app.use((error, req, res, next) => {
     res.status(error.status || 500);
     return res.send({
         erro: {
-            msg: error.message 
+            msg: error.message
         }
     });
 });

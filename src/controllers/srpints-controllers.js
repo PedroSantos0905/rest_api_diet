@@ -1,5 +1,4 @@
 const mysql = require('../database/mysql').pool;
-require("dotenv").config();
 
 exports.criarSprint = (req, res, next) => {
   console.log(req.usuario)
