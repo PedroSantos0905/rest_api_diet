@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../midlleware/auth');
-const sprintsController = require('../controllers/srpints-controllers');
+const sprintsController = require('../controllers/sprints-controllers');
 
 router.put('/', auth.obrigatorio, sprintsController.criarSprint);
 
