@@ -8,6 +8,9 @@ const rotaUsuarios = require('./routes/usuarios');
 const rotaAgua = require('./routes/agua');
 const rotaSprint = require('./routes/sprint');
 const rotaUserStory = require('./routes/user-story');
+const rotaDataAtual = require('./routes/data-atual');
+const rotaPerfil = require('./routes/perfil');
+const rotaScrumMaster = require('./routes/scrum-master');
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -36,6 +39,9 @@ app.use('/usuarios', rotaUsuarios);
 app.use('/agua', rotaAgua);
 app.use('/sprint', rotaSprint);
 app.use('/userStory', rotaUserStory);
+app.use('/dataAtual', rotaDataAtual);
+app.use('/perfil', rotaPerfil);
+app.use('/scrumMaster', rotaScrumMaster);
 
 app.use((req, res, next) => {
     const erro = new Error('Rota não encontrada');

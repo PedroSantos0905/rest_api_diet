@@ -108,7 +108,7 @@ exports.listarConsumo = (req, res, next) => {
         }
         const response = {
           quantidade: result.length,
-          sprints: result.map(agua => {
+          consumoAgua: result.map(agua => {
             return {
               id_agua: agua.id_agua,
               fk_usuario_agua: agua.fk_usuario_agua,
