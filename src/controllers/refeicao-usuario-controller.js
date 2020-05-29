@@ -30,6 +30,62 @@ exports.cadastrarRefeicaoUsuario = (req, res, next) => {
             });
         }
       });
-  
+
+    });
+  }
+
+exports.listarRefeicao = (req, res, next) => {
+    console.log(req.usuario)
+    mysql.getConnection((err, conn) => {
+      if (err) { return res.status(500).send({ error: error }) }
+      conn.query('SELECT id_refeicao, nm_refeicao, dt_refeicao, hr_refeicao FROM refeicao_usuario where id_usuario = ? order by dt_refeicao desc, hr_refeicao asc',
+        [req.usuario.id_usuario],
+        (error, result, fields) => {
+          if (error) { return res.status(500).send({ error: error }) }
+          if (result.length == 0) {
+            return res.status(404).send({
+              mensagem: 'Não há refeições cadastradas!'
+            })
+          }
+          const response = {
+            refeicoes: result.map(refeicao => {
+              return {
+                id_refeicao: refeicao.id_refeicao,
+                nome: refeicao.nm_refeicao,
+                data: refeicao.dt_refeicao,
+                hora: refeicao.hr_refeicao,
+              }
+            })
+          }
+          return res.status(200).send(response);
+        });
+    });
+  }
+
+  exports.listarRefeicaoDia = (req, res, next) => {
+    console.log(req.usuario)
+    mysql.getConnection((err, conn) => {
+      if (err) { return res.status(500).send({ error: error }) }
+      conn.query('SELECT id_refeicao, nm_refeicao, dt_refeicao, hr_refeicao FROM refeicao_usuario where id_usuario = ? and dt_refeicao = (SELECT DATE_FORMAT(now(), "%Y-%m-%d")DATA) order by dt_refeicao desc, hr_refeicao asc',
+        [req.usuario.id_usuario],
+        (error, result, fields) => {
+          if (error) { return res.status(500).send({ error: error }) }
+          if (result.length == 0) {
+            return res.status(404).send({
+              mensagem: 'Não há refeições cadastradas!'
+            })
+          }
+          const response = {
+            refeicoes: result.map(refeicao => {
+              return {
+                id_refeicao: refeicao.id_refeicao,
+                nome: refeicao.nm_refeicao,
+                data: refeicao.dt_refeicao,
+                hora: refeicao.hr_refeicao,
+              }
+            })
+          }
+          return res.status(200).send(response);
+        });
     });
   }

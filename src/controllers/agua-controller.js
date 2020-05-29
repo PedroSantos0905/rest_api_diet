@@ -8,7 +8,7 @@ exports.cadastrarConsumo = (req, res, next) => {
       [req.body.mililitro, req.body.fk_usuario_agua], (error, results) => {
         if (error) { return res.status(500).send({ error: error }) }
         if (results.length > 0) {
-          res.status(409).send({ mensagem: 'Consumo já cadastrado' })
+          res.status(409).send({ mensagem: 'Consumo já cadastrado!' })
         } else {
           conn.query(
             `INSERT INTO agua (fk_usuario_agua, mililitro, hora, alarme) VALUES (?,?,?,?)`,
@@ -17,7 +17,7 @@ exports.cadastrarConsumo = (req, res, next) => {
               conn.release();
               if (error) { return res.status(500).send({ error: error }) }
               const response = {
-                mensagem: 'Consumo de água cadastrado com sucesso',
+                mensagem: 'Consumo de água cadastrado com sucesso!',
                 consumoAguaCadastrado: {
                   id_agua: results.insertId,
                   fk_usuario_agua: req.usuario.id_usuario,
@@ -41,7 +41,7 @@ exports.atualizarConsumo = (req, res, next) => {
     conn.query('SELECT * FROM agua WHERE id_agua = ?', [req.body.id_agua], (error, results) => {
       if (error) { return res.status(500).send({ error: error }) }
       if (results.length <= 0) {
-        res.status(409).send({ mensagem: 'Consumo não encontrato' })
+        res.status(409).send({ mensagem: 'Consumo não encontrato!' })
       } else {
         conn.query(
           `UPDATE agua SET mililitro = ?, hora = ?, alarme = ? WHERE id_agua = ?`,
@@ -83,7 +83,7 @@ exports.excluirConsumo = (req, res, next) => {
               conn.release();
               if (error) { return res.status(500).send({ error: error }) }
               const response = {
-                mensagem: 'Consumo de água excluído com sucesso',
+                mensagem: 'Consumo de água excluído com sucesso!',
               }
               return res.status(200).send(response);
             });
@@ -103,7 +103,7 @@ exports.listarConsumo = (req, res, next) => {
         if (error) { return res.status(500).send({ error: error }) }
         if (result.length == 0) {
           return res.status(404).send({
-            mensagem: 'Não foi encontrado consumo de água para esse usuário'
+            mensagem: 'Não foi encontrado consumo de água para esse usuário!'
           })
         }
         const response = {
@@ -133,7 +133,7 @@ exports.selecionarConsumo = (req, res, next) => {
         if (error) { return res.status(500).send({ error: error }) }
         if (result.length == 0) {
           return res.status(404).send({
-            mensagem: 'Consumo não encontrado'
+            mensagem: 'Consumo não encontrado!'
           })
         }
         const response = {

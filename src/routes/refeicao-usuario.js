@@ -5,4 +5,8 @@ const refeicaoUsuarioController = require('../controllers/refeicao-usuario-contr
 
 router.put('/', auth.obrigatorio, refeicaoUsuarioController.cadastrarRefeicaoUsuario);
 
+router.get('/refeicoes', auth.obrigatorio, refeicaoUsuarioController.listarRefeicao);
+
+router.get('/refeicoesDia', auth.obrigatorio, refeicaoUsuarioController.listarRefeicaoDia);
+
 module.exports = router;
