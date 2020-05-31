@@ -13,4 +13,8 @@ router.get('/alimentosRefeicao', auth.obrigatorio, refeicaoUsuarioController.lis
 
 router.get('/selecionarRefeicao', auth.obrigatorio, refeicaoUsuarioController.selecionarRefeicao);
 
+router.put('/alterarRefeicaoUsuario', auth.obrigatorio, refeicaoUsuarioController.AlterarRefeicaoUsuario);
+
+router.delete('/excluirRefeicaoUsuario', auth.obrigatorio, refeicaoUsuarioController.ExcluirRefeicaoUsuario);
+
 module.exports = router;
