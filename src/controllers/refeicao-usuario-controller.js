@@ -90,6 +90,32 @@ exports.listarRefeicaoDia = (req, res, next) => {
     });
   }
 
+exports.selecionarRefeicao = (req, res, next) => {
+    mysql.getConnection((err, conn) => {
+      if (err) { return res.status(500).send({ error: error }) }
+      conn.query('select * from refeicao_usuario where id_refeicao = ?',
+        [req.body.id_refeicao],
+        (error, result, fields) => {
+          if (error) { return res.status(500).send({ error: error }) }
+          if (result.length == 0) {
+            return res.status(404).send({
+              mensagem: 'Refeição não encontrada!'
+            })
+          }
+          const response = {
+            refeicao: {
+              id_refeicao: result[0].id_refeicao,
+              nome: result[0].nm_refeicao,
+              alimentos: result[0].id_alimentos,
+              data: result[0].dt_refeicao,
+              hora: result[0].hr_refeicao
+            }
+          }
+          return res.status(200).send(response);
+        });
+    });
+  }
+
   exports.listarAlimentoRefeicao = (req, res, next) => {
     mysql.getConnection((err, conn) => {
       if (err) { return res.status(500).send({ error: error }) }
