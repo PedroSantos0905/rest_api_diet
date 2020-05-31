@@ -9,4 +9,6 @@ router.get('/refeicoes', auth.obrigatorio, refeicaoUsuarioController.listarRefei
 
 router.get('/refeicoesDia', auth.obrigatorio, refeicaoUsuarioController.listarRefeicaoDia);
 
+router.get('/alimentosRefeicao', auth.obrigatorio, refeicaoUsuarioController.listarAlimentoRefeicao);
+
 module.exports = router;
