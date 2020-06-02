@@ -11,4 +11,6 @@ router.get('/listar', auth.obrigatorio, sprintsController.listarSprints);
 
 router.get('/selecionar', auth.obrigatorio, sprintsController.selecionarSprint);
 
+router.delete('/excluir', auth.obrigatorio, sprintsController.excluiSprint);
+
 module.exports = router;
