@@ -30,24 +30,19 @@ exports.adicionarUsuario = (req, res, next) => {
   console.log(req.usuario)
   mysql.getConnection((err, conn) => {
     if (err) { return res.status(500).send({ error: error }) }
-
-    conn.query('SELECT * FROM usuario WHERE email = ?', [req.body.email], (error, results) => {
+    conn.query('SELECT * FROM usuario WHERE nome = ?', [req.body.nome], (error, results) => {
       if (error) { return res.status(500).send({ error: error }) }
       if (results.length <= 0) {
-        res.status(404).send({ mensagem: 'Usuário não cadastrado' })
+        res.status(404).send({ mensagem: 'Usuário não encontrado!' })
       } else {
         conn.query(
-          `call pr_adiciona_usuario_sprint(?,?,?)`,
-          [req.usuario.id_usuario, req.body.id_sprint, req.body.email],
-          (error, field) => {
+          `call pr_adiciona_usuario_sprint(?,?)`,
+          [req.body.id_sprint, req.body.nome],
+          (error, results, field) => {
             conn.release();
             if (error) { return res.status(500).send({ error: error }) }
             const response = {
-              mensagem: 'Usuário adicionado com sucesso',
-              usuarioAdicionado: {
-                usuario: req.body.email,
-                sprint: req.body.sprint
-              }
+                mensagem: results[0]
             }
             return res.status(200).send(response);
           })
@@ -98,8 +93,7 @@ exports.selecionarSprint = (req, res, next) => {
   console.log(req.usuario)
   mysql.getConnection((err, conn) => {
     if (err) { return res.status(500).send({ error: error }) }
-    conn.query(
-                         `SELECT sp.*
+    conn.query(`          SELECT sp.*
                           FROM sprint as sp
                           right join scrum_master as sm
                           on sp.id_scrum_master = sm.id_scrum_master

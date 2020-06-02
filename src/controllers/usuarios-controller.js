@@ -5,10 +5,10 @@ const jwt = require('jsonwebtoken');
 exports.cadastrarUsuario = (req, res, next) => {
   mysql.getConnection((err, conn) => {
     if (err) { return res.status(500).send({ error: error }) }
-    conn.query('SELECT * FROM usuario WHERE email = ?', [req.body.email], (error, results) => {
+    conn.query('SELECT * FROM usuario WHERE email = ? or nome = ?', [req.body.email, req.body.nome], (error, results) => {
       if (error) { return res.status(500).send({ error: error }) }
       if (results.length > 0) {
-        res.status(409).send({ mensagem: 'Usuário já cadastrado' })
+        res.status(409).send({ mensagem: 'Usuário já cadastrado!' })
       } else {
         bcrypt.hash(req.body.senha, 10, (errBcrypt, hash) => {
           if (errBcrypt) { return res.status(500).send({ error: errBcrypt }) }
@@ -19,7 +19,7 @@ exports.cadastrarUsuario = (req, res, next) => {
               conn.release();
               if (error) { return res.status(500).send({ error: error }) }
               const response = {
-                mensagem: 'Cadastro realizado com sucesso',
+                mensagem: 'Cadastro realizado com sucesso!',
                 usuarioCriado: {
                   usuario: results.insertId,
                   nome: req.body.nome,

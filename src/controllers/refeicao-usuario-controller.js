@@ -119,50 +119,23 @@ exports.selecionarRefeicao = (req, res, next) => {
 exports.listarAlimentoRefeicao = (req, res, next) => {
   mysql.getConnection((err, conn) => {
     if (err) { return res.status(500).send({ error: error }) }
-    conn.query(`
-select al.id_alimento,
-       al.alimento,
-       al.quantidade,
-       al.caloria,
-       ta.tipo
-from alimentos al
-join tipo_alimento ta on al.tipo_alimento = ta.id_tipo_alimento
-where al.id_alimento in (
-
-select id_alimento
-from alimentos
-where id_alimento in (
-      SELECT SPLIT_STR(id_alimentos, ',', 1) from refeicao_usuario where id_refeicao = ? union
-      SELECT SPLIT_STR(id_alimentos, ',', 2) from refeicao_usuario where id_refeicao = ? union
-      SELECT SPLIT_STR(id_alimentos, ',', 3) from refeicao_usuario where id_refeicao = ? union
-      SELECT SPLIT_STR(id_alimentos, ',', 4) from refeicao_usuario where id_refeicao = ? union
-      SELECT SPLIT_STR(id_alimentos, ',', 5) from refeicao_usuario where id_refeicao = ? union
-      SELECT SPLIT_STR(id_alimentos, ',', 6) from refeicao_usuario where id_refeicao = ? union
-      SELECT SPLIT_STR(id_alimentos, ',', 7) from refeicao_usuario where id_refeicao = ? union
-      SELECT SPLIT_STR(id_alimentos, ',', 8) from refeicao_usuario where id_refeicao = ? union
-      SELECT SPLIT_STR(id_alimentos, ',', 9) from refeicao_usuario where id_refeicao = ? union
-      SELECT SPLIT_STR(id_alimentos, ',', 10) from refeicao_usuario where id_refeicao = ?))
-      `,
-      [req.body.id_refeicao, req.body.id_refeicao, req.body.id_refeicao, req.body.id_refeicao, req.body.id_refeicao, req.body.id_refeicao, req.body.id_refeicao, req.body.id_refeicao, req.body.id_refeicao, req.body.id_refeicao],
-      (error, result, fields) => {
+    conn.query('SELECT * FROM refeicao_usuario WHERE id_refeicao = ?',
+      [req.body.id_refeicao], (error, results) => {
         if (error) { return res.status(500).send({ error: error }) }
-        if (result.length == 0) {
-          return res.status(404).send({
-            mensagem: 'Refeição não encontrada!'
-          })
+        if (results.length <= 0) {
+          res.status(409).send({ mensagem: 'Refeição não encontrada!' })
+        } else {
+          conn.query(`call pr_lista_alimentos_refeicao_usuario(?)`,
+            [req.body.id_refeicao],
+            (error, results) => {
+              conn.release();
+              if (error) { return res.status(500).send({ error: error }) }
+              const response = {
+                alimentos: results[0]
+              }
+              return res.status(200).send(response);
+            });
         }
-        const response = {
-          alimentos: result.map(alimento => {
-            return {
-              id_alimento: alimento.id_alimento,
-              nome: alimento.alimento,
-              data: alimento.quantidade,
-              hora: alimento.caloria,
-              hora: alimento.tipo,
-            }
-          })
-        }
-        return res.status(200).send(response);
       });
   });
 }
