@@ -13,7 +13,7 @@ exports.cadastrarUsuario = (req, res, next) => {
         bcrypt.hash(req.body.senha, 10, (errBcrypt, hash) => {
           if (errBcrypt) { return res.status(500).send({ error: errBcrypt }) }
           conn.query(
-            `INSERT INTO usuario (nome, email, senha, id_tipo_cadastro) VALUES (?,?,?,?)`,
+            `INSERT INTO usuario (nome, email, senha, id_tipo_cadastro, dtExpiracao) VALUES (?,?,?,?,(SELECT ADDDATE(now(), INTERVAL 1 MONTH) dtExpiracao))`,
             [req.body.nome, req.body.email, hash, req.body.id_tipo_cadastro],
             (error, results) => {
               conn.release();

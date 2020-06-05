@@ -38,7 +38,7 @@ exports.listarRefeicao = (req, res, next) => {
   console.log(req.usuario)
   mysql.getConnection((err, conn) => {
     if (err) { return res.status(500).send({ error: error }) }
-    conn.query('SELECT id_refeicao, nm_refeicao, dt_refeicao, hr_refeicao FROM refeicao_usuario where id_usuario = ? order by dt_refeicao desc, hr_refeicao asc',
+    conn.query('SELECT * FROM refeicao_usuario where id_usuario = ? order by dt_refeicao desc, hr_refeicao asc',
       [req.usuario.id_usuario],
       (error, result, fields) => {
         if (error) { return res.status(500).send({ error: error }) }
@@ -51,9 +51,11 @@ exports.listarRefeicao = (req, res, next) => {
           refeicoes: result.map(refeicao => {
             return {
               id_refeicao: refeicao.id_refeicao,
+              id_usuario: refeicao.id_usuario,
               nome: refeicao.nm_refeicao,
               data: refeicao.dt_refeicao,
               hora: refeicao.hr_refeicao,
+              calorias: refeicao.calorias_refeicao,
             }
           })
         }
@@ -66,7 +68,7 @@ exports.listarRefeicaoDia = (req, res, next) => {
   console.log(req.usuario)
   mysql.getConnection((err, conn) => {
     if (err) { return res.status(500).send({ error: error }) }
-    conn.query('SELECT id_refeicao, nm_refeicao, dt_refeicao, hr_refeicao FROM refeicao_usuario where id_usuario = ? and dt_refeicao = (SELECT DATE_FORMAT(now(), "%Y-%m-%d")DATA) order by dt_refeicao desc, hr_refeicao asc',
+    conn.query('SELECT * FROM refeicao_usuario where id_usuario = ? and dt_refeicao = (SELECT DATE_FORMAT(now(), "%Y-%m-%d")DATA) order by dt_refeicao desc, hr_refeicao asc',
       [req.usuario.id_usuario],
       (error, result, fields) => {
         if (error) { return res.status(500).send({ error: error }) }
@@ -79,9 +81,11 @@ exports.listarRefeicaoDia = (req, res, next) => {
           refeicoes: result.map(refeicao => {
             return {
               id_refeicao: refeicao.id_refeicao,
+              id_usuario: refeicao.id_usuario,
               nome: refeicao.nm_refeicao,
               data: refeicao.dt_refeicao,
               hora: refeicao.hr_refeicao,
+              calorias: refeicao.calorias_refeicao,
             }
           })
         }
