@@ -75,11 +75,11 @@ exports.login = (req, res, next) => {
       conn.release();
       if (error) { return res.status(500).send({ error: error }) }
       if (results.length < 1) {
-        return res.status(401).send({ mensagem: 'Falha na autenticação' })
+        return res.status(401).send({ mensagem: 'Falha na autenticação!' })
       }
       bcrypt.compare(req.body.senha, results[0].senha, (err, result) => {
         if (err) {
-          return res.status(401).send({ mensagem: 'Falha na autenticação' })
+          return res.status(401).send({ mensagem: 'Falha na autenticação!' })
         }
         if (result) {
           const token = jwt.sign({
@@ -90,12 +90,12 @@ exports.login = (req, res, next) => {
               expiresIn: "1d"
             });
           return res.status(200).send({
-            mensagem: 'Autenticado com sucesso',
+            mensagem: 'Autenticado com sucesso!',
             usuario: results[0].id_usuario,
             token: token
           });
         }
-        return res.status(401).send({ mensagem: 'Falha na autenticação' })
+        return res.status(401).send({ mensagem: 'Falha na autenticação!' })
       });
     });
   });

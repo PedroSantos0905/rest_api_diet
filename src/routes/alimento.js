@@ -7,4 +7,6 @@ router.get('/', auth.obrigatorio, alimentoController.pesquisarAlimento);
 
 router.get('/selecionar', auth.obrigatorio, alimentoController.selecionarAlimento);
 
+router.get('/listarAlimento', auth.obrigatorio, alimentoController.listarAlimento);
+
 module.exports = router;
