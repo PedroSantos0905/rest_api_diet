@@ -44,13 +44,45 @@ exports.adicionarUsuario = (req, res, next) => {
 }
 
 exports.listarSprints = (req, res, next) => {
+  mysql.getConnection((err, conn) => {
+    if (err) { return res.status(500).send({ error: error }) }
+    conn.query('SELECT * FROM sprint', (error, results) => {
+      if (error) { return res.status(500).send({ error: error }) }
+      if (results.length <= 0) {
+        res.status(404).send({ mensagem: 'Sprints não encontradas!' })
+      } else {
+        conn.query(
+          `SELECT * FROM sprint`,
+          (error, results, field) => {
+            conn.release();
+            if (error) { return res.status(500).send({ error: error }) }
+            const response = {
+              sprint: results.map(sprint => {
+                return {
+                  id_sprint: sprint.id_sprint,
+                  id_usuario: sprint.id_usuario,
+                  goal: sprint.goal,
+                  dt_inicio: sprint.dt_inicio,
+                  dt_fim: sprint.dt_fim,
+                  hora_inicio: sprint.hora_inicio,
+                  hora_fim: sprint.hora_fim
+                }
+              })}
+            return res.status(200).send(response);
+          })
+      }
+    });
+  });
+}
+
+exports.listarMinhasSprints = (req, res, next) => {
   console.log(req.usuario)
   mysql.getConnection((err, conn) => {
     if (err) { return res.status(500).send({ error: error }) }
     conn.query('SELECT * FROM sprint WHERE id_usuario = ?', [req.usuario.id_usuario], (error, results) => {
       if (error) { return res.status(500).send({ error: error }) }
       if (results.length <= 0) {
-        res.status(404).send({ mensagem: 'Você não tem Sprints cadastrada!' })
+        res.status(404).send({ mensagem: 'Você não tem Sprints cadastradas!' })
       } else {
         conn.query(
           `call bd_diet.pr_lista_sprint(?)`,

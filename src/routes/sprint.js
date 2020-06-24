@@ -9,6 +9,8 @@ router.put('/adicionarUsuario', auth.obrigatorio, sprintsController.adicionarUsu
 
 router.get('/listar', auth.obrigatorio, sprintsController.listarSprints);
 
+router.get('/listarMinhasSprints', auth.obrigatorio, sprintsController.listarMinhasSprints);
+
 router.get('/selecionar', auth.obrigatorio, sprintsController.selecionarSprint);
 
 router.delete('/excluir', auth.obrigatorio, sprintsController.excluiSprint);

@@ -52,7 +52,7 @@ inner join tipo_alimento as tal on al.tipo_alimento = tal.id_tipo_alimento`,
         if (error) { return res.status(500).send({ error: error }) }
         if (result.length == 0) {
           return res.status(404).send({
-            mensagem: 'Aqui!'
+            mensagem: 'Alimentos não encontrados!'
           })
         }
         const response = {

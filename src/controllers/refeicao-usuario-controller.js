@@ -127,7 +127,7 @@ exports.listarAlimentoRefeicao = (req, res, next) => {
       [req.body.id_refeicao], (error, results) => {
         if (error) { return res.status(500).send({ error: error }) }
         if (results.length <= 0) {
-          res.status(409).send({ mensagem: 'Refeição não encontrada!' })
+          res.status(404).send({ mensagem: 'Refeição não encontrada!' })
         } else {
           conn.query(`call pr_lista_alimentos_refeicao_usuario(?)`,
             [req.body.id_refeicao],
