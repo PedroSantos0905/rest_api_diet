@@ -144,3 +144,20 @@ exports.excluiSprint = (req, res, next) => {
     });
   });
 }
+
+exports.entrarSprint = (req, res, next) => {
+  console.log(req.usuario)
+  mysql.getConnection((err, conn) => {
+        conn.query(
+          `call pr_entra_sprint(?,?)`,
+          [req.usuario.id_usuario, req.body.id_sprint],
+          (error, results, field) => {
+            conn.release();
+            if (error) { return res.status(500).send({ error: error }) }
+            const response = {
+                mensagem: results[0]
+            }
+            return res.status(200).send(response);
+          })
+    });
+};

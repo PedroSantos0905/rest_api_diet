@@ -7,6 +7,8 @@ router.put('/', auth.obrigatorio, sprintsController.criarSprint);
 
 router.put('/adicionarUsuario', auth.obrigatorio, sprintsController.adicionarUsuario);
 
+router.put('/entrarSprint', auth.obrigatorio, sprintsController.entrarSprint);
+
 router.get('/listar', auth.obrigatorio, sprintsController.listarSprints);
 
 router.get('/listarMinhasSprints', auth.obrigatorio, sprintsController.listarMinhasSprints);
