@@ -161,3 +161,108 @@ exports.entrarSprint = (req, res, next) => {
           })
     });
 };
+
+//listar participantes da sprint (tela 3)
+exports.listarParticipantes = (req, res, next) => {
+  console.log(req.usuario)
+  mysql.getConnection((err, conn) => {
+    if (err) { return res.status(500).send({ error: error }) }
+    conn.query(`call pr_lista_participantes_sprint(?,?)`,
+      [req.usuario.id_usuario, req.body.id_sprint],
+      (error, result, fields) => {
+        if (error) { return res.status(500).send({ error: error }) }
+        if (result.length <= 0) {
+          return res.status(404).send({
+            mensagem: 'Sprint não encontrada!'
+          })
+        }
+        const response = {
+          sprint: result[0]
+        }
+        return res.status(200).send(response);
+      });
+  });
+}
+
+//cadastrar refeições de participantes da sprint (tela 4)
+exports.cadastrarRefeicaoSprint = (req, res, next) => {
+  console.log(req.usuario)
+  mysql.getConnection((err, conn) => {
+        conn.query(
+          `call pr_cria_refeicao_membro_sprint(?,?,?,?,?,?)`,
+          [req.body.nm_refeicao, req.body.id_alimentos, req.usuario.id_usuario, req.body.id_sprint, req.body.dt_refeicao, req.body.hr_refeicao],
+          (error, results, field) => {
+            conn.release();
+            if (error) { return res.status(500).send({ error: error }) }
+            const response = {
+                mensagem: results[0]
+            }
+            return res.status(200).send(response);
+          })
+    });
+};
+
+//listar refeições de participantes da sprint (tela 5)
+exports.listarRefeicaoParticipanteSprint = (req, res, next) => {
+  console.log(req.usuario)
+  mysql.getConnection((err, conn) => {
+        conn.query(
+          `call pr_lista_refeicao_participantes_sprint(?,?,?)`,
+          [req.usuario.id_usuario, req.body.id_usuarioParticipante, req.body.id_sprint],
+          (error, results, field) => {
+            conn.release();
+            if (error) { return res.status(500).send({ error: error }) }
+            const response = {
+                refeicoes: results[0]
+            }
+            return res.status(200).send(response);
+          })
+    });
+};
+
+//selecionar refeição de participantes da sprint (tela 6)
+exports.selecionarRefeicaoParticipanteSprint = (req, res, next) => {
+  console.log(req.usuario)
+  mysql.getConnection((err, conn) => {
+        conn.query(
+          `call pr_seleciona_refeicao_participantes_sprint(?,?,?,?)`,
+          [req.usuario.id_usuario, req.body.id_usuarioParticipante, req.body.id_sprint, req.body.id_refeicao],
+          (error, results, field) => {
+            conn.release();
+            if (error) { return res.status(500).send({ error: error }) }
+            const response = {
+                refeicao: results[0]
+            }
+            return res.status(200).send(response);
+          })
+    });
+};
+
+//selecionar alimentos da refeição do participante da sprint (tela 7)
+exports.listarAlimentoRefeicaoParticipanteSprint = (req, res, next) => {
+  console.log(req.usuario)
+  mysql.getConnection((err, conn) => {
+    if (err) { return res.status(500).send({ error: error }) }
+    conn.query(`
+            SELECT sp.* FROM sprint sp
+            join refeicao_membro_sprint rms on rms.id_sprint = sp.id_sprint
+            WHERE sp.id_sprint = ?`, [req.body.id_sprint], (error, results) => {
+      if (error) { return res.status(500).send({ error: error }) }
+      if (results.length <= 0) {
+        res.status(404).send({ mensagem: 'Sprint não encontrada!' })
+      } else {
+        conn.query(
+          `call pr_lista_alimentos_refeicao_participante_sprint(88, 88, 39, 8)`,
+          [req.usuario.id_usuario, req.body.id_usuarioParticipante, req.body.id_sprint, req.body.id_refeicao],
+          (error, results, field) => {
+            conn.release();
+            if (error) { return res.status(500).send({ error: error }) }
+            const response = {
+                sprints: results[0]
+            }
+            return res.status(200).send(response);
+          })
+      }
+    });
+  });
+}

@@ -17,4 +17,14 @@ router.get('/selecionar', auth.obrigatorio, sprintsController.selecionarSprint);
 
 router.delete('/excluir', auth.obrigatorio, sprintsController.excluiSprint);
 
+router.get('/listarParticipantes', auth.obrigatorio, sprintsController.listarParticipantes);
+
+router.put('/cadastrarRefeicaoSprint', auth.obrigatorio, sprintsController.cadastrarRefeicaoSprint);
+
+router.get('/listarRefeicaoParticipanteSprint', auth.obrigatorio, sprintsController.listarRefeicaoParticipanteSprint);
+
+router.get('/selecionarRefeicaoParticipanteSprint', auth.obrigatorio, sprintsController.selecionarRefeicaoParticipanteSprint);
+
+router.get('/listarAlimentoRefeicaoParticipanteSprint', auth.obrigatorio, sprintsController.listarAlimentoRefeicaoParticipanteSprint);
+
 module.exports = router;
