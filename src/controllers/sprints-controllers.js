@@ -252,7 +252,7 @@ exports.listarAlimentoRefeicaoParticipanteSprint = (req, res, next) => {
         res.status(404).send({ mensagem: 'Sprint não encontrada!' })
       } else {
         conn.query(
-          `call pr_lista_alimentos_refeicao_participante_sprint(88, 88, 39, 8)`,
+          `call pr_lista_alimentos_refeicao_participante_sprint(?,?,?,?)`,
           [req.usuario.id_usuario, req.body.id_usuarioParticipante, req.body.id_sprint, req.body.id_refeicao],
           (error, results, field) => {
             conn.release();
