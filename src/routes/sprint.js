@@ -27,4 +27,12 @@ router.get('/selecionarRefeicaoParticipanteSprint', auth.obrigatorio, sprintsCon
 
 router.get('/listarAlimentoRefeicaoParticipanteSprint', auth.obrigatorio, sprintsController.listarAlimentoRefeicaoParticipanteSprint);
 
+router.get('/listarRefeicaoSprint', auth.obrigatorio, sprintsController.listarRefeicaoSprint);
+
+router.get('/selecionarRefeicaoSprint', auth.obrigatorio, sprintsController.selecionarRefeicaoSprint);
+
+router.put('/atualizarRefeicaoSprint', auth.obrigatorio, sprintsController.atualizarRefeicaoSprint);
+
+router.delete('/excluirRefeicaoSprint', auth.obrigatorio, sprintsController.excluirRefeicaoSprint);
+
 module.exports = router;

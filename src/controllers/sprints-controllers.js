@@ -266,3 +266,77 @@ exports.listarAlimentoRefeicaoParticipanteSprint = (req, res, next) => {
     });
   });
 }
+
+//funcionálidades do usuário logado
+
+//listar
+exports.listarRefeicaoSprint = (req, res, next) => {
+  console.log(req.usuario)
+  mysql.getConnection((err, conn) => {
+        conn.query(
+          `call pr_lista_refeicao_sprint(?)`,
+          [req.usuario.id_usuario],
+          (error, results, field) => {
+            conn.release();
+            if (error) { return res.status(500).send({ error: error }) }
+            const response = {
+                refeicoes: results[0]
+            }
+            return res.status(200).send(response);
+          })
+    });
+};
+
+//selecionar
+exports.selecionarRefeicaoSprint = (req, res, next) => {
+  console.log(req.usuario)
+  mysql.getConnection((err, conn) => {
+        conn.query(
+          `call pr_selecionar_refeicao_sprint(?,?)`,
+          [req.usuario.id_usuario, req.body.id_refeicao],
+          (error, results, field) => {
+            conn.release();
+            if (error) { return res.status(500).send({ error: error }) }
+            const response = {
+                refeicoes: results[0]
+            }
+            return res.status(200).send(response);
+          })
+    });
+};
+
+//atualizar
+exports.atualizarRefeicaoSprint = (req, res, next) => {
+  console.log(req.usuario)
+  mysql.getConnection((err, conn) => {
+        conn.query(
+          `call pr_alterar_refeicao_membro_sprint(?,?,?,?,?,?,?)`,
+          [req.body.id_refeicao, req.body.nm_refeicao, req.body.id_alimentos, req.usuario.id_usuario, req.body.id_sprint, req.body.dt_refeicao, req.body.hr_refeicao],
+          (error, results, field) => {
+            conn.release();
+            if (error) { return res.status(500).send({ error: error }) }
+            const response = {
+                refeicoes: results[0]
+            }
+            return res.status(200).send(response);
+          })
+    });
+};
+
+//excluir
+exports.excluirRefeicaoSprint = (req, res, next) => {
+  console.log(req.usuario)
+  mysql.getConnection((err, conn) => {
+        conn.query(
+          `call pr_excluir_refeicao_sprint(?,?)`,
+          [req.usuario.id_usuario, req.body.id_refeicao],
+          (error, results, field) => {
+            conn.release();
+            if (error) { return res.status(500).send({ error: error }) }
+            const response = {
+                refeicoes: results[0]
+            }
+            return res.status(200).send(response);
+          })
+    });
+};
