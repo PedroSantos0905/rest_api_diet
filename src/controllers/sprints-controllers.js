@@ -164,7 +164,7 @@ exports.entrarSprint = (req, res, next) => {
 
 //listar participantes da sprint (tela 3)
 exports.listarParticipantes = (req, res, next) => {
-  console.log(req.usuario)
+  console.log(req.usuario, req.body.id_sprint)
   mysql.getConnection((err, conn) => {
     if (err) { return res.status(500).send({ error: error }) }
     conn.query(`call pr_lista_participantes_sprint(?,?)`,
