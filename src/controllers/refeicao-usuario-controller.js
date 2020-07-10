@@ -38,7 +38,19 @@ exports.listarRefeicao = (req, res, next) => {
   console.log(req.usuario)
   mysql.getConnection((err, conn) => {
     if (err) { return res.status(500).send({ error: error }) }
-    conn.query('SELECT * FROM refeicao_usuario where id_usuario = ? order by dt_refeicao desc, hr_refeicao asc',
+    conn.query(`
+    select
+        id_refeicao_usuario,
+        id_refeicao,
+        nm_refeicao,
+        id_usuario,
+        id_alimentos,
+        DATE_FORMAT (dt_refeicao,'%d/%m/%Y') AS dt_refeicao,
+        DATE_FORMAT (hr_refeicao,'%Hh%i') AS hr_refeicao,
+        calorias_refeicao
+    from refeicao_usuario
+    where id_usuario = ? order by dt_refeicao desc, hr_refeicao asc;
+    `,
       [req.usuario.id_usuario],
       (error, result, fields) => {
         if (error) { return res.status(500).send({ error: error }) }
